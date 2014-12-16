@@ -2,6 +2,7 @@ Publish aggregated Meshlium sensor readings to a SODA API such as Socrata.
 Created for a City of Melbourne/University of Melbourne project as Data Guru in Residence.
 
 Author: Steve Bennett, stevage@gmail.com
+
 Licence: WTFPL
 
 ## Installation
