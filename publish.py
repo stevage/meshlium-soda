@@ -24,8 +24,6 @@ def getArgs():
 Delete all rows in portal. There's no other way to do this than through the API.
 '''
 def deleteAll():
-  # To try:  a PUT with no content instead. http://dev.socrata.com/publishers/replace.html
-
   r = requests.put(config.dataset + '.json', data='[]', headers=headers, auth=config.auth)
   print r.text
 
