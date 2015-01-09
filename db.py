@@ -55,8 +55,13 @@ def getReadings(latest_published, rowlimit):
   rows = []
   d = db.execute(text(aggregate_environmental)).fetchall()
   # There's probably a smarter way of doing all this.
+
+  #TODO: Need to support timezone. We want to store the data in the portal as timezone-included Melbourne time,
+  # but in the database as timezone-not-included UTC.
+
   for r in d:
     rowid = re.sub('[-: ]', '', str(r['timestamp_agg']))
+    print str(r['timestamp_agg'])
     row = {
       'rowid': rowid,
       'temp_max': r['temp_max'],
