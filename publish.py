@@ -1,23 +1,30 @@
 #!/usr/bin/env python 
 '''
-Publish aggregated Meshlium sensor readings to a SODA API such as Socrata.
+Publish aggregated Meshlium sensor readings from MySQL to a SODA API such as Socrata.
 Created for a City of Melbourne/University of Melbourne project as Data Guru in Residence.
 
-Author: Steve Bennett, stevage@gmail.com
-Licence: WTFPL
+Author: Steve Bennett, 
+Web: http://stevebennett.me
+Twitter: @stevage1 
+Email: stevage@gmail.com 
+Tumblr: http://melbdataguru.tumblr.com 
+Licence: WTFPL/Public Domain
 '''
 
 import requests, logging, simplejson, argparse, datetime
 import config
 import db
-headers = {'X-App-Token': config.app_token}
-headers['Content-Type'] = 'application/json'
+headers = {
+  'X-App-Token': config.app_token,
+  'Content-Type': 'application/json'
+  }
+
 
 def getArgs():
   p = argparse.ArgumentParser(description='Aggregate Meshlium data and send to Socrata.')
   p.add_argument('--wipe', help='First wipe all rows from the destination.', action='store_true')
   p.add_argument('--verbose', help='Produce verbose output for debugging', action='store_true')
-  p.add_argument('--rows', help='Number of rows to send.', type=int, default=2)
+  p.add_argument('--rows', help='Number of rows to send.', type=int, default=100)
   return p.parse_args()
 
 
