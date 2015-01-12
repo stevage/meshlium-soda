@@ -16,6 +16,7 @@ headers['Content-Type'] = 'application/json'
 def getArgs():
   p = argparse.ArgumentParser(description='Aggregate Meshlium data and send to Socrata.')
   p.add_argument('--wipe', help='First wipe all rows from the destination.', action='store_true')
+  p.add_argument('--verbose', help='Produce verbose output for debugging', action='store_true')
   p.add_argument('--rows', help='Number of rows to send.', type=int, default=2)
   return p.parse_args()
 
@@ -24,7 +25,9 @@ def getArgs():
 Delete all rows in portal. There's no other way to do this than through the API.
 '''
 def deleteAll():
-  r = requests.put(config.dataset + '.json', data='[ ]', headers=headers, auth=config.auth)
+  # Very puzzling. Doco says that a PUT with no data should replace data with nothing. Socrata Support says to use DELETE.
+  # http://stackoverflow.com/questions/27850714/deleting-all-rows-in-dataset-with-soda-api/27855051#27855051
+  r = requests.delete(config.dataset + '.json', data='[ ]', headers=headers, auth=config.auth)
   print r.status_code, r.text
 
 '''
@@ -62,7 +65,8 @@ def rowsPublished():
   return count
 
 def publishDataset(rows):
-  print simplejson.dumps(rows)
+  if args.verbose:
+    print simplejson.dumps(rows)
   r = requests.post(config.dataset, data=simplejson.dumps(rows), headers = headers, auth=config.auth)
   j = r.json()
   print
@@ -84,7 +88,8 @@ if args.wipe:
 print "(For usage: publish.py --help)"
 print "Publishing up to %d rows now: %s" % (args.rows, datetime.datetime.now())
 latest_published = latestPublished()
-print 'Latest timestamp: %s (%d rows)' % (latest_published, rowsPublished())
+if args.verbose:
+  print 'Latest timestamp: %s (%d rows)' % (latest_published, rowsPublished())
 rows = db.getReadings(latest_published, args.rows)
 print "Sending %d rows." % len(rows)
 j = publishDataset(rows)

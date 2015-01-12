@@ -60,8 +60,8 @@ def getReadings(latest_published, rowlimit):
   # but in the database as timezone-not-included UTC.
 
   for r in d:
-    rowid = re.sub('[-: ]', '', str(r['timestamp_agg']))
-    print str(r['timestamp_agg'])
+    rowid = str(r['boardid']) + '-' + re.sub('[-: ]', '', str(r['timestamp_agg']))
+    #print str(r['timestamp_agg'])
     row = {
       'rowid': rowid,
       'temp_max': r['temp_max'],
@@ -79,6 +79,7 @@ def getReadings(latest_published, rowlimit):
       'latitude': r['lat'],
       'longitude': r['lon'],
       'elevation': r['eln'],
+      'location': r['location'],
       'model': r['model'],
       'mac': r['mac']      
 
