@@ -8,7 +8,7 @@ Web: http://stevebennett.me
 Twitter: @stevage1 
 Email: stevage@gmail.com 
 Tumblr: http://melbdataguru.tumblr.com 
-Licence: WTFPL/Public Domain
+Licence: Go nuts/BSD3 (see LICENSE.md)
 '''
 
 import requests, logging, simplejson, argparse, datetime

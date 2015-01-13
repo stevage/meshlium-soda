@@ -12,6 +12,10 @@ from sqlalchemy.orm import sessionmaker
 import sqlalchemy, re
 import config
 
+db_uri = 'mysql://%s:%s@%s:%s/%s' % (config.SQL_USER, config.SQL_PASSWORD, config.SQL_IP, config.SQL_PORT, config.SQL_DB)
+DEBUGSQL = False
+db = sqlalchemy.create_engine(db_uri, encoding='latin1', echo=DEBUGSQL)
+
 
 '''
 Run aggregation query on the database and return results as a dict.
@@ -20,7 +24,6 @@ rowlimit: only this number of records will be returned.
 '''
 def getReadings(latest_published, rowlimit):
   interval_mins = 5 # Period in minutes over which to aggregate readings.
-  DEBUGSQL = False
   aggregate_environmental = '''SELECT
       date_sub(timestamp,interval (minute(timestamp) %% %d ) * 60 + second(timestamp) second) AS timestamp_agg,
       si.boardid, 
@@ -49,8 +52,6 @@ def getReadings(latest_published, rowlimit):
       LIMIT %d''' % (interval_mins, interval_mins, latest_published, rowlimit) # No idea why normal :parameters don't work.
 
 
-  db_uri = 'mysql://%s:%s@%s:%s/%s' % (config.SQL_USER, config.SQL_PASSWORD, config.SQL_IP, config.SQL_PORT, config.SQL_DB)
-  db = sqlalchemy.create_engine(db_uri, encoding='latin1', echo=DEBUGSQL)
 
   rows = []
   d = db.execute(text(aggregate_environmental)).fetchall()
@@ -82,6 +83,32 @@ def getReadings(latest_published, rowlimit):
       'location': r['location'],
       'model': r['model'],
       'mac': r['mac']      
+
+    }
+    rows.append(row)
+
+  return rows
+
+
+'''
+Get just the sensor information
+'''
+def getLocations():
+  getSensorInfo = '''SELECT boardid, boardtype, model, lat, lon, eln, location 
+    FROM sensor_info
+    '''
+
+  d = db.execute(text(getSensorInfo)).fetchall()
+  rows = []
+  for r in d:
+    row = {
+      'boardid': r['boardid'],
+      'boardtype': r['boardtype'],
+      'model': r['model'],
+      'latitude': r['lat'],
+      'longitude': r['lon'],
+      'elevation': r['eln'],
+      'location': r['location']
 
     }
     rows.append(row)
